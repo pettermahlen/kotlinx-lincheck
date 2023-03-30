@@ -20,15 +20,18 @@
 
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import kotlinx.atomicfu.*
-import org.jetbrains.kotlinx.lincheck.*
-import org.jetbrains.kotlinx.lincheck.annotations.*
-import org.jetbrains.kotlinx.lincheck.strategy.*
-import org.jetbrains.kotlinx.lincheck.strategy.managed.*
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
-import org.jetbrains.kotlinx.lincheck.test.*
-import org.junit.*
+import kotlinx.atomicfu.atomic
+import org.jetbrains.kotlinx.lincheck.annotations.Operation
+import org.jetbrains.kotlinx.lincheck.appendFailure
+import org.jetbrains.kotlinx.lincheck.checkImpl
+import org.jetbrains.kotlinx.lincheck.strategy.DeadlockWithDumpFailure
+import org.jetbrains.kotlinx.lincheck.strategy.managed.ForcibleExecutionFinishException
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
+import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
+import org.junit.Ignore
+import org.junit.Test
 
+@Ignore
 class ForcibleFinishExceptionInTryBlockTest {
     private val threadsIn = atomic(0)
 

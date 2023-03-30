@@ -88,7 +88,7 @@ object LincheckClassFileTransformer : ClassFileTransformer {
 
     private val instrumentation = ByteBuddyAgent.install()
 
-    fun install() {
+    internal fun install() {
         TransformationInjectionsInitializer.initialize()
         instrumentation.addTransformer(LincheckClassFileTransformer, true)
         val loadedClasses = instrumentation.allLoadedClasses
@@ -108,7 +108,7 @@ object LincheckClassFileTransformer : ClassFileTransformer {
         }
     }
 
-    fun uninstall() {
+    internal fun uninstall() {
         instrumentation.removeTransformer(LincheckClassFileTransformer)
         val classDefinitions = instrumentation.allLoadedClasses.mapNotNull { clazz ->
             val bytes = oldClasses[classKey(clazz.classLoader, clazz.name)]
@@ -141,6 +141,7 @@ object LincheckClassFileTransformer : ClassFileTransformer {
     }
 
     private fun shouldTransform(className: String): Boolean {
+        if (className.contains("ClassLoader")) return true
         if (className.startsWith("sun.nio.ch.lincheck.")) return false
         if (className == "kotlin.collections.ArraysKt___ArraysKt") return false
         if (className == "kotlin.collections.CollectionsKt___CollectionsKt") return false
@@ -200,7 +201,7 @@ internal class LincheckClassVisitor(cw: ClassWriter) : ClassVisitor(ASM_API, cw)
         signature: String?,
         value: Any?
     ): FieldVisitor {
-        if (access and ACC_FINAL != 0) {
+        if (!className.contains("ClassLoader") && access and ACC_FINAL != 0) {
             FinalFields.addFinalField(className, fieldName)
         }
         return super.visitField(access, fieldName, descriptor, signature, value)
@@ -233,6 +234,10 @@ internal class LincheckClassVisitor(cw: ClassWriter) : ClassVisitor(ASM_API, cw)
     ): MethodVisitor {
         var mv = super.visitMethod(access, methodName, desc, signature, exceptions)
         if (access and ACC_NATIVE != 0) return mv
+        if (className.contains("ClassLoader")) {
+            if (methodName == "loadClass") mv = ClassLoaderTransformer(methodName, GeneratorAdapter(mv, access, methodName, desc))
+            return mv
+        }
         if (methodName == "<clinit>" || methodName == "<init>") {
             return IgnoreClassInitializationTransformer(methodName, GeneratorAdapter(mv, access, methodName, desc))
         }
@@ -402,6 +407,28 @@ internal class LincheckClassVisitor(cw: ClassWriter) : ClassVisitor(ASM_API, cw)
 
         init {
             check(methodName == "<clinit>" || methodName == "<init>")
+        }
+
+        override fun visitCode() = adapter.run {
+            invokeStatic(Injections::enterIgnoredSection)
+            visitCode()
+        }
+
+        override fun visitInsn(opcode: Int) = adapter.run {
+            when (opcode) {
+                ARETURN, DRETURN, FRETURN, IRETURN, LRETURN, RETURN -> {
+                    invokeStatic(Injections::leaveIgnoredSection)
+                }
+            }
+            visitInsn(opcode)
+        }
+    }
+
+    private inner class ClassLoaderTransformer(methodName: String, adapter: GeneratorAdapter) :
+        ManagedStrategyMethodVisitor(methodName, adapter) {
+
+        init {
+            check(methodName == "loadClass")
         }
 
         override fun visitCode() = adapter.run {

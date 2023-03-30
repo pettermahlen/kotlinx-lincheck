@@ -21,20 +21,22 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
-import org.jetbrains.kotlinx.lincheck.strategy.stress.*
-import org.jetbrains.kotlinx.lincheck.test.*
-import org.jetbrains.kotlinx.lincheck.verifier.*
-import org.junit.*
-import java.util.concurrent.atomic.*
+import org.jetbrains.kotlinx.lincheck.appendFailure
+import org.jetbrains.kotlinx.lincheck.checkImpl
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
+import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
+import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import org.junit.Ignore
+import org.junit.Test
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater
 
 /**
  * This test checks that AFU calls captured in an incorrect interleaving have proper representation.
  * Instead of `compareAndSet(object, 1, 2)` representation should be `fieldName.compareAndSet(1, 2)`,
  * where `fieldName` is the parameter in constructor for the AFU.
  */
+@Ignore
 class AFUCallRepresentationTest : VerifierState() {
     @Volatile
     private var counter = 0

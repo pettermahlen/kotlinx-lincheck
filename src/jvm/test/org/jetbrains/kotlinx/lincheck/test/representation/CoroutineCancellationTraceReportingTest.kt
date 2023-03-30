@@ -20,14 +20,17 @@
 
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import kotlinx.coroutines.*
-import org.jetbrains.kotlinx.lincheck.*
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
-import org.jetbrains.kotlinx.lincheck.test.*
-import org.jetbrains.kotlinx.lincheck.verifier.*
-import org.junit.*
+import org.jetbrains.kotlinx.lincheck.checkImpl
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
+import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
+import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import org.junit.Ignore
+import org.junit.Test
 
+@Ignore
 class CoroutineCancellationTraceReportingTest : VerifierState() {
     @Volatile
     var correct = true

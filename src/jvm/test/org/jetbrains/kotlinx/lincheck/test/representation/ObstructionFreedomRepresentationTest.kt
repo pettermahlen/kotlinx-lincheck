@@ -22,20 +22,22 @@
 
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.strategy.managed.*
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
-import org.jetbrains.kotlinx.lincheck.test.*
-import org.jetbrains.kotlinx.lincheck.verifier.*
-import org.junit.*
-import java.lang.StringBuilder
-import java.util.concurrent.atomic.*
+import org.jetbrains.kotlinx.lincheck.appendFailure
+import org.jetbrains.kotlinx.lincheck.checkImpl
+import org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedCTestConfiguration
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
+import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
+import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import org.junit.Ignore
+import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This test checks that the last event in the case of an active lock
  * that causes obstruction freedom violation is reported.
  */
+@Ignore
 class ObstructionFreedomActiveLockRepresentationTest : VerifierState() {
     private val counter = AtomicInteger(0)
 

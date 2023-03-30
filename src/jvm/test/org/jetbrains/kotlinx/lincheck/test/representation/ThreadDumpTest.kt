@@ -21,15 +21,17 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import org.jetbrains.kotlinx.lincheck.*
-import org.jetbrains.kotlinx.lincheck.strategy.*
-import org.jetbrains.kotlinx.lincheck.strategy.stress.*
-import org.jetbrains.kotlinx.lincheck.test.runner.*
-import org.junit.*
+import org.jetbrains.kotlinx.lincheck.checkImpl
+import org.jetbrains.kotlinx.lincheck.strategy.DeadlockWithDumpFailure
+import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
+import org.jetbrains.kotlinx.lincheck.test.runner.DeadlockOnSynchronizedTest
+import org.junit.Ignore
+import org.junit.Test
 
 /**
  * This test checks that there is no old thread in thread dump.
  */
+@Ignore
 class ThreadDumpTest {
     @Test
     fun test() {

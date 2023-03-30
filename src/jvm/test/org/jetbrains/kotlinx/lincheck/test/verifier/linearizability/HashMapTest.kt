@@ -24,10 +24,12 @@ package org.jetbrains.kotlinx.lincheck.test.verifier.linearizability
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.annotations.Param
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
+import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
+import org.jetbrains.kotlinx.lincheck.strategy.UnexpectedExceptionFailure
 import org.jetbrains.kotlinx.lincheck.test.AbstractLincheckTest
 
 @Param(name = "key", gen = IntGen::class)
-class HashMapTest : AbstractLincheckTest() {
+class HashMapTest : AbstractLincheckTest(IncorrectResultsFailure::class, UnexpectedExceptionFailure::class) {
     private val m = HashMap<Int, Int>()
 
     @Operation

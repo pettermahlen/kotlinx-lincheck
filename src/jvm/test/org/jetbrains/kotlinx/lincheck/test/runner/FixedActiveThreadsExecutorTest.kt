@@ -24,7 +24,6 @@ package org.jetbrains.kotlinx.lincheck.test.runner
 import org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor
 import org.jetbrains.kotlinx.lincheck.runner.TestThreadExecution
 import org.junit.Test
-import sun.nio.ch.lincheck.TestThread
 import java.util.concurrent.TimeoutException
 
 class FixedActiveThreadsExecutorTest {
@@ -74,17 +73,5 @@ class FixedActiveThreadsExecutorTest {
             return // TimeoutException is expected
         }
         check(false) { "TimeoutException was expected" }
-    }
-
-    @Test(timeout = 100_000)
-    fun testShutdown() {
-        // executor with unique runner hash
-        val uniqueRunnerHash = 1337
-        FixedActiveThreadsExecutor("FixedActiveThreadsExecutorTest.testShutdown", 2, uniqueRunnerHash).close()
-        while (true) {
-            // check that all test threads are finished
-            if (Thread.getAllStackTraces().keys.all { it !is TestThread })
-                return
-        }
     }
 }

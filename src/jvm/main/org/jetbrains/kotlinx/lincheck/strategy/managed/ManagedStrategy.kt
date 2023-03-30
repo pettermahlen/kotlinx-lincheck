@@ -246,6 +246,7 @@ abstract class ManagedStrategy(
      * @param codeLocation the byte-code location identifier of the point in code.
      */
     private fun newSwitchPoint(iThread: Int, codeLocation: Int, tracePoint: TracePoint?) {
+        if (suddenInvocationResult != null) return
         check(iThread == currentThread)
         var isLoop = false
         if (loopDetector.visitCodeLocation(iThread, codeLocation)) {
@@ -257,6 +258,7 @@ abstract class ManagedStrategy(
             checkLiveLockHappened(loopDetector.totalOperations)
             isLoop = true
         }
+        if (suddenInvocationResult != null) return
         val shouldSwitch = shouldSwitch(iThread) or isLoop
         if (shouldSwitch) {
             val reason = if (isLoop) SwitchReason.ACTIVE_LOCK else SwitchReason.STRATEGY_SWITCH
@@ -442,6 +444,7 @@ abstract class ManagedStrategy(
      * @return whether lock should be actually released
      */
     private fun beforeLockRelease(codeLocation: Int, tracePoint: MonitorExitTracePoint?, monitor: Any) {
+        if (suddenInvocationResult != null) return
         monitorTracker.releaseMonitor(monitor)
         traceCollector?.passCodeLocation(tracePoint)
     }
@@ -499,7 +502,7 @@ abstract class ManagedStrategy(
      * if a coroutine was suspended.
      * @param iThread number of invoking thread
      */
-    internal fun afterCoroutineSuspended(iThread: Int) {
+    internal fun afterCoroutineSuspended(iThread: Int) = runInIgnoredSection {
         check(currentThread == iThread)
         isSuspended[iThread] = true
         if (runner.isCoroutineResumed(iThread, currentActorId[iThread])) {

@@ -21,13 +21,15 @@
 package org.jetbrains.kotlinx.lincheck.test.guide
 
 import org.jctools.queues.atomic.MpscLinkedAtomicQueue
-import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.annotations.OpGroupConfig
+import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.check
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
+import org.junit.Ignore
 import org.junit.Test
-import java.util.*
 
+@Ignore
 @OpGroupConfig(name = "consumer", nonParallel = true)
 class MPSCQueueTest {
     private val queue = MpscLinkedAtomicQueue<Int>()

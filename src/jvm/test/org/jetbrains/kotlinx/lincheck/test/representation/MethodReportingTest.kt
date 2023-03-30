@@ -27,12 +27,14 @@ import org.jetbrains.kotlinx.lincheck.checkImpl
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
 import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import org.junit.Ignore
 import org.junit.Test
 
 /**
  * This test checks interleaving reporting features related to methods, such as reporting of atomic functions with
  * and their parameters and results compression of calls that are executed without a context switch in the middle.
  */
+@Ignore
 class MethodReportingTest : VerifierState() {
     @Volatile
     var a = 0

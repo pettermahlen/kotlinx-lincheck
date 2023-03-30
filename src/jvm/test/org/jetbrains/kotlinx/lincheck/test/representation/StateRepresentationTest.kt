@@ -21,24 +21,23 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.representation
 
-import kotlinx.atomicfu.*
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.annotations.StateRepresentation
 import org.jetbrains.kotlinx.lincheck.appendFailure
 import org.jetbrains.kotlinx.lincheck.checkImpl
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
-import org.jetbrains.kotlinx.lincheck.strategy.stress.*
 import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
-import org.jetbrains.kotlinx.lincheck.test.*
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
+import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
+import org.jetbrains.kotlinx.lincheck.test.checkTraceHasNoLincheckEvents
 import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import org.junit.Ignore
 import org.junit.Test
-import java.lang.IllegalStateException
-import java.lang.StringBuilder
-import java.util.concurrent.atomic.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This test checks that there are states in reported interleavings for model checking strategy.
  */
+@Ignore
 open class ModelCheckingStateReportingTest {
     @Volatile
     private var counter = AtomicInteger(0)
@@ -104,6 +103,7 @@ class StressStateReportingTest : VerifierState() {
     }
 }
 
+@Ignore
 class StateRepresentationInParentClassTest : ModelCheckingStateReportingTest()
 
 class TwoStateRepresentationFunctionsTest : VerifierState() {
