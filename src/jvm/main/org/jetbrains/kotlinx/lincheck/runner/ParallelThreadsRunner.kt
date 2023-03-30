@@ -25,11 +25,11 @@ import kotlinx.coroutines.*
 import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.CancellationResult.*
 import org.jetbrains.kotlinx.lincheck.execution.*
-import org.jetbrains.kotlinx.lincheck.runner.ParallelThreadsRunner.Completion.ParallelThreadRunnerInterceptor
+import org.jetbrains.kotlinx.lincheck.runner.ParallelThreadsRunner.Completion.*
 import org.jetbrains.kotlinx.lincheck.runner.UseClocks.*
 import org.jetbrains.kotlinx.lincheck.strategy.*
 import org.objectweb.asm.*
-import sun.nio.ch.lincheck.TestThread
+import sun.nio.ch.lincheck.*
 import java.lang.reflect.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
@@ -101,7 +101,7 @@ internal open class ParallelThreadsRunner(
 
         override val context = ParallelThreadRunnerInterceptor(resWithCont) + StoreExceptionHandler() + Job()
 
-        override fun resumeWith(result: kotlin.Result<Any?>) {
+        override fun resumeWith(result: kotlin.Result<Any?>) = runInIgnoredSection {
             // decrement completed or suspended threads only if the operation was not cancelled and
             // the continuation was not intercepted; it was already decremented before writing `resWithCont` otherwise
             if (!result.cancelledByLincheck()) {
@@ -126,7 +126,7 @@ internal open class ParallelThreadsRunner(
         private inner class ParallelThreadRunnerInterceptor(
             private var resWithCont: SuspensionPointResultWithContinuation
         ) : AbstractCoroutineContextElement(ContinuationInterceptor), ContinuationInterceptor {
-            override fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T> {
+            override fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T> = runInIgnoredSection {
                 return Continuation(StoreExceptionHandler() + Job()) { result ->
                     // decrement completed or suspended threads only if the operation was not cancelled
                     if (!result.cancelledByLincheck()) {
@@ -142,7 +142,7 @@ internal open class ParallelThreadsRunner(
         }
     }
 
-    private fun reset() {
+    private fun reset() = runInIgnoredSection {
         testInstance = testClass.newInstance()
         testThreadExecutions.forEachIndexed { t, ex ->
             ex.testInstance = testInstance
@@ -179,7 +179,7 @@ internal open class ParallelThreadsRunner(
      * Otherwise if the invoked actor completed without suspension, then it just writes it's final result.
      */
     @Suppress("unused")
-    fun processInvocationResult(res: Any?, iThread: Int, actorId: Int): Result {
+    fun processInvocationResult(res: Any?, iThread: Int, actorId: Int): Result = runInIgnoredSection {
         val actor = scenario.parallelExecution[iThread][actorId]
         val finalResult = if (res === COROUTINE_SUSPENDED) {
             val t = Thread.currentThread() as TestThread
@@ -199,7 +199,17 @@ internal open class ParallelThreadsRunner(
         return finalResult
     }
 
-    private fun waitAndInvokeFollowUp(iThread: Int, actorId: Int): Result {
+    private inline fun <R> runInIgnoredSection(block: () -> R): R {
+        val t = Thread.currentThread() as? TestThread
+        t?.let { it.ignoredSectionDepth++ }
+        try {
+            return block()
+        } finally {
+            t?.let { it.ignoredSectionDepth-- }
+        }
+    }
+
+    private fun waitAndInvokeFollowUp(iThread: Int, actorId: Int): Result = runInIgnoredSection {
         // Coroutine is suspended. Call method so that strategy can learn it.
         afterCoroutineSuspended(iThread)
         // Tf the suspended method call has a follow-up part after this suspension point,
@@ -232,8 +242,15 @@ internal open class ParallelThreadsRunner(
      * This method is used for communication between `ParallelThreadsRunner` and `ManagedStrategy` via overriding,
      * so that runner do not know about managed strategy details.
      */
-    internal open fun <T> cancelByLincheck(cont: CancellableContinuation<T>, promptCancellation: Boolean): CancellationResult =
-        cont.cancelByLincheck(promptCancellation)
+    internal open fun <T> cancelByLincheck(cont: CancellableContinuation<T>, promptCancellation: Boolean): CancellationResult {
+        val t = Thread.currentThread() as? TestThread
+        t?.let { it.ignoredSectionDepth-- }
+        try {
+             return cont.cancelByLincheck(promptCancellation)
+        } finally {
+            t?.let { it.ignoredSectionDepth++ }
+        }
+    }
 
     override fun afterCoroutineSuspended(iThread: Int) {
         completedOrSuspendedThreads.incrementAndGet()
@@ -243,8 +260,9 @@ internal open class ParallelThreadsRunner(
 
     // We cannot use `completionStatuses` here since
     // they are set _before_ the result is published.
-    override fun isCoroutineResumed(iThread: Int, actorId: Int) =
+    override fun isCoroutineResumed(iThread: Int, actorId: Int) = runInIgnoredSection {
         suspensionPointResults[iThread][actorId] != NoResult || completions[iThread][actorId].resWithCont.get() != null
+    }
 
     override fun run(): InvocationResult {
         reset()
@@ -312,7 +330,7 @@ internal open class ParallelThreadsRunner(
         return CompletedInvocationResult(results)
     }
 
-    override fun onStart(iThread: Int) {
+    override fun onStart(iThread: Int) = runInIgnoredSection {
         super.onStart(iThread)
         uninitializedThreads.decrementAndGet() // this thread has finished initialization
         // wait for other threads to start

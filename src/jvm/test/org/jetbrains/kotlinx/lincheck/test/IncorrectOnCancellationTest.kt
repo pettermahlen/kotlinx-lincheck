@@ -20,13 +20,10 @@
 
 package org.jetbrains.kotlinx.lincheck.test
 
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
-import org.junit.Ignore
+import kotlinx.coroutines.*
+import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.strategy.*
 
-@Ignore
 class IncorrectOnCancellationTest : AbstractLincheckTest(IncorrectResultsFailure::class) {
     @Volatile
     var canEnterForbiddenSection = false

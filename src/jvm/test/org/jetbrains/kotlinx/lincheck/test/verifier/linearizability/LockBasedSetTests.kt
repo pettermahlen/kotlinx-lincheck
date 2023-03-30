@@ -21,14 +21,13 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.verifier.linearizability
 
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.annotations.Param
-import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
-import org.jetbrains.kotlinx.lincheck.test.AbstractLincheckTest
-import org.junit.Ignore
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.paramgen.*
+import org.jetbrains.kotlinx.lincheck.test.*
+import org.junit.*
+import java.util.concurrent.atomic.*
+import java.util.concurrent.locks.*
+import kotlin.concurrent.*
 
 @Param(name = "key", gen = IntGen::class, conf = "1:5")
 abstract class AbstractSetTest(private val set: Set) : AbstractLincheckTest() {
@@ -44,9 +43,7 @@ abstract class AbstractSetTest(private val set: Set) : AbstractLincheckTest() {
     override fun extractState(): Any = (1..5).map { set.contains(it) }
 }
 
-@Ignore
 class SpinLockSetTest : AbstractSetTest(SpinLockBasedSet())
-@Ignore
 class ReentrantLockSetTest : AbstractSetTest(ReentrantLockBasedSet())
 class SynchronizedLockSetTest : AbstractSetTest(SynchronizedBlockBasedSet())
 @Ignore

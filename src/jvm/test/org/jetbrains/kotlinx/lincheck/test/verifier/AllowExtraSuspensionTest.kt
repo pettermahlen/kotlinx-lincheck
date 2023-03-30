@@ -21,20 +21,16 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.verifier
 
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import org.jetbrains.kotlinx.lincheck.Options
+import kotlinx.atomicfu.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.*
+import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
-import org.jetbrains.kotlinx.lincheck.test.AbstractLincheckTest
-import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
-import org.junit.Ignore
-import java.util.concurrent.atomic.AtomicInteger
+import org.jetbrains.kotlinx.lincheck.strategy.*
+import org.jetbrains.kotlinx.lincheck.test.*
+import org.jetbrains.kotlinx.lincheck.verifier.*
+import java.util.concurrent.atomic.*
 
-@Ignore
 class AllowExtraSuspensionCorrectTest : AbstractLincheckTest() {
     private val mutex = Mutex()
     private var counter = AtomicInteger()
@@ -52,7 +48,6 @@ class AllowExtraSuspensionCorrectTest : AbstractLincheckTest() {
     }
 }
 
-@Ignore
 class AllowExtraSuspensionIncorrectTest : AbstractLincheckTest(IncorrectResultsFailure::class) {
     private val mutex = Mutex()
     private var counter = AtomicInteger()
@@ -71,7 +66,6 @@ class AllowExtraSuspensionIncorrectTest : AbstractLincheckTest(IncorrectResultsF
 }
 
 // One of the operations should always succeed without suspension
-@Ignore
 class OnlyExtraSuspensionsHaveToBeAtomicTest : AbstractLincheckTest() {
     private val c = atomic(0)
 

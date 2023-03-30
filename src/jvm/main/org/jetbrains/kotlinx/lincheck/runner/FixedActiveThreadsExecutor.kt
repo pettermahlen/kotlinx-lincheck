@@ -21,14 +21,13 @@
  */
 package org.jetbrains.kotlinx.lincheck.runner
 
-import kotlinx.atomicfu.atomicArrayOfNulls
-import org.jetbrains.kotlinx.lincheck.execution.ExecutionScenario
-import sun.nio.ch.lincheck.TestThread
-import java.io.Closeable
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeoutException
-import java.util.concurrent.locks.LockSupport
-import kotlin.math.min
+import kotlinx.atomicfu.*
+import org.jetbrains.kotlinx.lincheck.execution.*
+import sun.nio.ch.lincheck.*
+import java.io.*
+import java.util.concurrent.*
+import java.util.concurrent.locks.*
+import kotlin.math.*
 
 /**
  * This executor maintains the specified number of threads and is used by
@@ -193,7 +192,7 @@ internal class FixedActiveThreadsExecutor(testName: String, private val nThreads
         }
         // Park until a task is stored into `tasks[iThread]`.
         val currentThread = Thread.currentThread()
-        if (tasks[iThread].compareAndSet(null, Thread.currentThread())) {
+        if (tasks[iThread].compareAndSet(null, currentThread)) {
             while (tasks[iThread].value === currentThread) {
                 LockSupport.park()
             }
@@ -229,8 +228,8 @@ internal class FixedActiveThreadsExecutor(testName: String, private val nThreads
     }
 
     companion object {
-        private val SHUTDOWN = Any()
-        private val DONE = Any()
+        private val SHUTDOWN = "SHUTDOWN"
+        private val DONE = "DONE"
         private const val MAX_SPIN_COUNT = 1_000_000
         private const val WAS_PARK_BALANCE_THRESHOLD = 20
     }

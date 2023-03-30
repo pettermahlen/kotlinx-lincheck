@@ -20,26 +20,23 @@
 
 package org.jetbrains.kotlinx.lincheck
 
-import net.bytebuddy.ByteBuddy
-import net.bytebuddy.agent.ByteBuddyAgent
-import net.bytebuddy.dynamic.ClassFileLocator
-import net.bytebuddy.dynamic.loading.ClassInjector
-import net.bytebuddy.pool.TypePool
+import net.bytebuddy.*
+import net.bytebuddy.agent.*
+import net.bytebuddy.dynamic.*
+import net.bytebuddy.dynamic.loading.*
+import net.bytebuddy.pool.*
 import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.commons.*
-import org.objectweb.asm.commons.GeneratorAdapter.GT
-import org.objectweb.asm.commons.InstructionAdapter.OBJECT_TYPE
-import sun.nio.ch.lincheck.CodeLocations
-import sun.nio.ch.lincheck.FinalFields
-import sun.nio.ch.lincheck.Injections
-import java.lang.instrument.ClassDefinition
-import java.lang.instrument.ClassFileTransformer
-import java.security.ProtectionDomain
+import org.objectweb.asm.commons.GeneratorAdapter.*
+import org.objectweb.asm.commons.InstructionAdapter.*
+import sun.nio.ch.lincheck.*
+import java.lang.instrument.*
+import java.security.*
 import java.util.*
 import kotlin.collections.set
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.*
+import kotlin.reflect.jvm.*
 
 internal object TransformationInjectionsInitializer {
     private var initialized = false
@@ -171,10 +168,10 @@ object LincheckClassFileTransformer : ClassFileTransformer {
         if (className.startsWith("sun.") ||
             className.startsWith("java.") ||
             className.startsWith("jdk.internal.") ||
-//            className.startsWith("kotlin.") &&
-//            !className.startsWith("kotlin.collections.") &&  // transform kotlin collections
-//            !(className.startsWith("kotlin.jvm.internal.Array") && className.contains("Iterator")) &&
-//            !className.startsWith("kotlin.ranges.") ||
+            className.startsWith("kotlin.") &&
+            !className.startsWith("kotlin.collections.") &&  // transform kotlin collections
+            !(className.startsWith("kotlin.jvm.internal.Array") && className.contains("Iterator")) &&
+            !className.startsWith("kotlin.ranges.") ||
             className.startsWith("com.intellij.rt.coverage.") ||
             className.startsWith("org.jetbrains.kotlinx.lincheck.") && !className.startsWith("org.jetbrains.kotlinx.lincheck.test.") ||
             className.startsWith("kotlinx.coroutines.DispatchedTask")

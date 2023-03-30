@@ -20,20 +20,15 @@
 
 package org.jetbrains.kotlinx.lincheck.test
 
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.jetbrains.kotlinx.lincheck.Options
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.annotations.Param
-import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
-import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
-import org.jetbrains.kotlinx.lincheck.strategy.LincheckFailure
-import org.junit.Ignore
-import kotlin.coroutines.resume
-import kotlin.reflect.KClass
+import kotlinx.atomicfu.*
+import kotlinx.coroutines.*
+import org.jetbrains.kotlinx.lincheck.*
+import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.paramgen.*
+import org.jetbrains.kotlinx.lincheck.strategy.*
+import org.junit.*
+import kotlin.coroutines.*
+import kotlin.reflect.*
 
 abstract class AbstractPromptCancellationTest(
     vararg expectedFailures: KClass<out LincheckFailure>,

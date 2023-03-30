@@ -21,12 +21,11 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.verifier.linearizability
 
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.annotations.Param
-import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
-import org.jetbrains.kotlinx.lincheck.test.AbstractLincheckTest
-import org.junit.Ignore
-import java.util.concurrent.ConcurrentSkipListMap
+import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.paramgen.*
+import org.jetbrains.kotlinx.lincheck.test.*
+import org.junit.*
+import java.util.concurrent.*
 
 @Ignore
 @Param(name = "value", gen = IntGen::class, conf = "1:5")

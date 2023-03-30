@@ -21,15 +21,12 @@
  */
 package org.jetbrains.kotlinx.lincheck.test.runner
 
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.jetbrains.kotlinx.lincheck.Options
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.test.AbstractLincheckTest
-import org.junit.Ignore
-import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.*
+import org.jetbrains.kotlinx.lincheck.*
+import org.jetbrains.kotlinx.lincheck.annotations.*
+import org.jetbrains.kotlinx.lincheck.test.*
+import org.junit.*
+import java.util.concurrent.atomic.*
 
 @Ignore
 class CancellationHandlingTest : AbstractLincheckTest() {
