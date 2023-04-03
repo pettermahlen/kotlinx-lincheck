@@ -20,8 +20,13 @@
 
 package org.jetbrains.kotlinx.lincheck.test.util
 
+import org.jetbrains.kotlinx.lincheck.LincheckOptions
 import org.jetbrains.kotlinx.lincheck.Messages
 
 internal fun logWithoutVerbosePart(log: String) = log.substringBefore(Messages.DETAILED_PARALLEL_PART)
 
 internal fun logVerbosePart(log: String) = log.substringAfter(Messages.DETAILED_PARALLEL_PART)
+
+internal fun LincheckOptions.defaultIterations() = apply {
+    iterations(100)
+}

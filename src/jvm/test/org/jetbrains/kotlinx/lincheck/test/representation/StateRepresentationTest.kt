@@ -25,10 +25,9 @@ package org.jetbrains.kotlinx.lincheck.test.representation
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.annotations.StateRepresentation
 import org.jetbrains.kotlinx.lincheck.*
-import org.jetbrains.kotlinx.lincheck.strategy.stress.*
 import org.jetbrains.kotlinx.lincheck.strategy.IncorrectResultsFailure
 import org.jetbrains.kotlinx.lincheck.test.*
-import org.jetbrains.kotlinx.lincheck.test.util.logWithoutVerbosePart
+import org.jetbrains.kotlinx.lincheck.test.util.*
 import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
 import org.junit.Test
 import java.lang.IllegalStateException
@@ -55,6 +54,7 @@ open class ModelCheckingStateReportingTest {
     fun test() {
         val options = LincheckOptions()
             .mode(LincheckMode.ModelChecking)
+            .defaultIterations()
             .actorsPerThread(1)
             .actorsBefore(0)
             .actorsAfter(0)
@@ -93,6 +93,7 @@ class StressStateReportingTest : VerifierState() {
     fun test() {
         val options = LincheckOptions()
             .mode(LincheckMode.Stress)
+            .defaultIterations()
             .actorsPerThread(1)
             .actorsBefore(0)
             .actorsAfter(0)
@@ -131,6 +132,7 @@ class TwoStateRepresentationFunctionsTest : VerifierState() {
     fun test() {
         LincheckOptions()
             .mode(LincheckMode.ModelChecking)
+            .defaultIterations()
             .actorsPerThread(1)
             .actorsBefore(0)
             .actorsAfter(0)
@@ -158,6 +160,7 @@ class NonDeterministicStateRepresentationTest() {
     fun test() {
         val options = LincheckOptions()
             .mode(LincheckMode.ModelChecking)
+            .defaultIterations()
             .actorsPerThread(1)
             .actorsBefore(0)
             .actorsAfter(0)
